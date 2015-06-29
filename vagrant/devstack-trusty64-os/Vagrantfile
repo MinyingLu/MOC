@@ -23,7 +23,7 @@ SCRIPT
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure(2) do |config|
-
+  # define instances in loop
   (1..3).each do |i|
 	config.vm.define "devstack#{i}" do |devstack|
 	  devstack.ssh.username = 'ubuntu'
