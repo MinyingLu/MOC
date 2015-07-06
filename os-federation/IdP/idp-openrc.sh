@@ -26,7 +26,7 @@ export OS_PROJECT_NAME="admin"
 export OS_PROJECT_ID="37c3b05f16d54d9f98fe4c626f01f9b6"
 
 # v2 is not aware of domain, but all tenant in domain "default" I think...
-export OS_DOMAIN_NAME="default"
+export OS_DOMAIN_ID="default"
 
 # In addition to the owning entity (tenant), OpenStack stores the entity
 # performing the action as the **user**.
