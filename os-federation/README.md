@@ -8,6 +8,7 @@ Things to do:
 This is document is a side note of radrigod's tutorial. It is **not** a thorough explaination of everything. 
 
 `keystone.sp` = IP address of sp + `:5000`
+
 `keystone.idp` = IP address of idp + `:5000`
 
 ### Set up environment
