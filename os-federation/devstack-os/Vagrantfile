@@ -22,37 +22,37 @@ SCRIPT
 Vagrant.configure(2) do |config|
   # define instances in loop
   (1..2).each do |i|
-	config.vm.define "devstack#{i}" do |devstack|
-	  devstack.ssh.username = 'ubuntu'
-	  # change to your own private key
-	  devstack.ssh.private_key_path = '~/.ssh/csail-mylu-key.pem'
+    config.vm.define "devstack#{i}" do |devstack|
+      devstack.ssh.username = 'ubuntu'
+      # change to your own private key
+      devstack.ssh.private_key_path = '~/.ssh/csail-mylu-key.pem'
 
-	  # define os instance
-	  devstack.vm.provider :openstack do |os|
-	    os.openstack_auth_url 	= 'https://nimbus.csail.mit.edu:5001/v2.0/tokens'	
-		os.username             = ENV['OS_USERNAME']
+      # define os instance
+      devstack.vm.provider :openstack do |os|
+        os.openstack_auth_url   = 'https://nimbus.csail.mit.edu:5001/v2.0/tokens'   
+        os.username             = ENV['OS_USERNAME']
         os.password             = ENV['OS_PASSWORD']
         os.tenant_name          = ENV['OS_TENANT_NAME']
         os.flavor               = '4G-1C-32D'
         os.server_name          = "vagrant-devstack#{i}"
-		os.image                = '4dc46de2-e7f8-457d-b3fb-eb082d81d87b'
-		os.endpoint_type        = 'publicURL'
-	    # name of public key corresponding to ur private key on os project
-		os.sync_method 			= 'none'
-		os.keypair_name         = 'csail-mylu-key' 
-	  end
+        os.image                = '4dc46de2-e7f8-457d-b3fb-eb082d81d87b'
+        os.endpoint_type        = 'publicURL'
+        # name of public key corresponding to ur private key on os project
+        os.sync_method          = 'none'
+        os.keypair_name         = 'csail-mylu-key' 
+      end
 
-	  devstack.vm.provision "shell" do |shell|
-	    shell.inline = "cat /dev/null > /etc/hosts"
-	  end
+      devstack.vm.provision "shell" do |shell|
+        shell.inline = "cat /dev/null > /etc/hosts"
+      end
 
-	  devstack.vm.hostname = "vagrant-devstack#{i}"
-	  devstack.vm.provision :hostmanager
+      devstack.vm.hostname = "vagrant-devstack#{i}"
+      devstack.vm.provision :hostmanager
 
       # shell command to update vm and install devstack
-	  devstack.vm.provision "shell", inline: $script
+      devstack.vm.provision "shell", inline: $script
 
-	end
+    end
   end
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
