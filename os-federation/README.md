@@ -10,6 +10,14 @@ This is document is a side note of radrigod's tutorial. It is **not** a thorough
 `keystone.sp` = IP address of sp + `:5000`
 `keystone.idp` = IP address of idp + `:5000`
 
+### Set up environment
+
+`devstack-os` folder contains vagrant recipe to spin up 3 devstack kilo openstack environment on csail environment 
+
+Important thing is, by default devstack kilo has keystone v2, so to switch to keyston v3 we follow [this](http://www.symantec.com/connect/blogs/how-switch-keystone-v20-v3) tutorial
+
+And then you can follow rodrigod's tutorial to setup keystone.conf and attribute and shibbothle xml files 
+
 ### Set up SP 
 * `Attribute` in `/etc/shibboleth/attribute-map.xml` is use for mapping the incoming client from IdP. For example, remote client will be `"type": "openstack_user"`
 * `idp_entity_id` in `keystone.conf` file has to match with `SSO entityID` in `/etc/shibboleth/shibboleth2.xml` 
@@ -18,7 +26,7 @@ This is document is a side note of radrigod's tutorial. It is **not** a thorough
   * Federated user and group1 (i.e. user and group that has granted premission from IdP to get service from SP) will be mapped to `openstack_user` which is specified in `attributes` 
   * Federated user/group only have access to projects/domains that they have roles for. i.e. For a federated user/group to access a project in SP, we have to grant a role of the project to the federated user/group
   * The id for IdPi (I call it **idp_id** in the following document) is the id we specify in `create_idp` function 
-  * THe id for protocal (**protocal_id**) and mapping (**mapping_id**)) are also as we specified in `create_protocol` and `create_mapping` functions
+  * THe id for protocal (**protocal_id**) and mapping (**mapping_id**) are also as we specified in `create_protocol` and `create_mapping` functions
 
 ### Set up IdP 
 * `setupk2k_idp` script sets up SP in idp. 
