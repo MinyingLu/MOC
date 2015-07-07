@@ -22,6 +22,7 @@ And then you can follow rodrigod's tutorial to setup keystone.conf and attribute
 ### Set up SP 
 * `Attribute` in `/etc/shibboleth/attribute-map.xml` is use for mapping the incoming client from IdP. For example, remote client will be `"type": "openstack_user"`
 * `idp_entity_id` in `keystone.conf` file has to match with `SSO entityID` in `/etc/shibboleth/shibboleth2.xml` 
+* make sure to edit `[saml]` section in `keyston.conf` file in **both** IdP and SP
 * The `build_client.py` script creates a client for admin user in SP
 * The `setupk2k_sp.py` script sets up IdP in SP, it creates the client for admin user, domain, group, role and project for federatoin and assign roles to the group, it also creates mapping, idp and protocol.
   * Federated user and group1 (i.e. user and group that has granted premission from IdP to get service from SP) will be mapped to `openstack_user` which is specified in `attributes` 
