@@ -9,22 +9,20 @@ from keystoneclient.v3 import client as keystone_v3
 
 class K2KClient(object):  
     def __init__(self):
-        self.sp_id = os.environ.get('OS_SP_ID')
-        #self.token_id = os.environ.get('OS_TOKEN')
-        self.auth_url = os.envrion.get('OS_AUTH_URL')
-        self.project_id = os.envrion.get('OS_PROJECT_ID')
-        self.user_id = os.envrion.get('OS_USER_ID')
-        self.password = os.envrion.get('OS_PASSWORD')
-        self.domain_id = os.envrion.get('OS_DOMAIN_ID')
+        self.sp_id = 'keystone-sp'
+        self.sp_ip = '128.52.183.216'
+        self.auth_url = "http://128.52.183.234:5000/v3"
+        self.project_id = "a0683f4059654c63ae4f1663b461088d"
+        self.user_id = "caf9b2e813aa41f4b12eb6f46241828c"
+        self.password = "nomoresecrete"
 
     def v3_authenticate(self):
         auth = v3.Password(auth_url=self.auth_url,
                            user_id=self.user_id,
                            password=self.password,
-                           user_domain_id=self.domain_id,
                            project_id=self.project_id)
         self.session = ksc_session.Session(auth=auth, verify=False)
-        self.session.auth.get_auth_ref(self.session)
+        #self.session.auth.get_auth_ref(self.session)
         self.token = self.session.auth.get_token(self.session)
 
     def _generate_token_json(self):
@@ -87,7 +85,7 @@ class K2KClient(object):
         self.fed_token = r.text
 
     def list_federated_projects(self):
-        url = 'http://128.52.181.121:5000/v3/OS-FEDERATION/projects'
+        url = 'http://' + self.sp_ip + ':5000/v3/OS-FEDERATION/projects'
         headers = {'x-auth-token': self.fed_token_id}
         print headers
         r = self.session.get(url=url, headers=headers, verify=False)
@@ -101,24 +99,24 @@ class K2KClient(object):
                 "identity": {
                     "methods": [
                         "token"
-                    ],  
+                    ],
                     "token": {
                         "id": self.fed_token_id
-                    }   
-                },  
+                    }
+                },
                 "scope": {
                     "project": {
                         "id": project_id
-                    }   
-                }   
-            }   
+                    }
+                }
+            }
         }
 
     def scope_token(self, project_id):
         # project_id can be select from the list in the previous step
         token = json.dumps(self._get_scoped_token_json(project_id))
         print token
-        url = 'http://128.52.181.121:5000/v3/auth/tokens'
+        url = 'http://128.52.183.216:5000/v3/auth/tokens'
         headers = {'x-auth-token': self.fed_token_id,
         'Content-Type': 'application/json'}
         r = self.session.post(url=url, headers=headers, data=token,
@@ -126,7 +124,29 @@ class K2KClient(object):
         self._check_response(r)
         self.r = r
         self.scoped_token_id = r.headers['X-Subject-Token']
-        self.scoped_token = str(r.text)
+        self.scoped_token_ref = str(r.text)
+
+client = K2KClient()
+client.v3_authenticate()
+client.get_saml2_ecp_assertion()
+print('ECP wrapped SAML assertion: %s' % client.assertion)
+client.exchange_assertion()
+print('Unscoped token id: %s' % client.fed_token_id)
+print "==================SCOPE TOKEN================="
+project_list = client.list_federated_projects()
+project_id = str(project_list[u'projects'][1][u'id'])
+print('scope to project [%s]' % project_list[u'projects'][1]['name'])
+print ('project id: %s' % project_id)
+client.scope_token(project_id=project_id)
+print('Scoped token id: %s' % client.scoped_token_id)
+client.scoped_auth_ref = client.r.json()
+client.scoped_auth = v3.Token(auth_url="http://128.52.183.216:5000/v3", 
+                              token=client.scoped_token_id)
+client.scoped_auth.auth_ref = client.scoped_auth_ref
+client.scoped_session = ksc_session.Session(auth=client.scoped_auth, verify=False)
+client.unscoped_auth = v3.Token(auth_url="http://128.52.183.216:5000/v3", 
+                                token=client.fed_token_id)
+client.unscoped_session = ksc_session.Session(auth=client.unscoped_auth, verify=False)
 
 def main():  
     client = K2KClient()
@@ -137,9 +157,19 @@ def main():
     print('Unscoped token id: %s' % client.fed_token_id)
     print "==================SCOPE TOKEN================="
     project_list = client.list_federated_projects()
-    project_id = project_list[u'projects'][1][u'id']
-    print project_id
+    project_id = str(project_list[u'projects'][1][u'id'])
+    print('scope to project [%s]' % project_list[u'projects'][1]['name'])
+    print ('project id: %s' % project_id)
     client.scope_token(project_id=project_id)
+    print('Scoped token id: %s' % client.scoped_token_id)
+    client.scoped_auth_ref = client.r.json()
+    client.scoped_auth = v3.Token(auth_url="http://128.52.183.216:5000/v3", 
+                                token=client.scoped_token_id)
+    client.scoped_auth.auth_ref = client.scoped_auth_ref
+    client.scoped_session = ksc_session.Session(auth=client.scoped_auth, verify=False)
+    client.unscoped_auth = v3.Token(auth_url="http://128.52.183.216:5000/v3", 
+                                token=client.fed_token_id)
+    client.unscoped_session = ksc_session.Session(auth=client.unscoped_auth, verify=False)
 
 if __name__ == "__main__":  
     main()

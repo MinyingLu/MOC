@@ -4,25 +4,11 @@ from keystoneclient import session as ksc_session
 from keystoneclient.auth.identity import v3  
 from keystoneclient.v3 import client as keystone_v3
 
-try:  
-     Used for creating the ADMIN user
-    OS_PASSWORD = os.environ['OS_PASSWORD']
-    OS_USER_ID = os.environ['OS_USER_ID']
-    OS_AUTH_URL = os.environ['OS_AUTH_URL']
-    OS_PROJECT_ID = os.environ['OS_PROJECT_ID']
-    OS_DOMAIN_ID = os.environ['OS_DOMAIN_ID']
-except KeyError as e:  
-    raise SystemExit('%s environment variable not set.' % e)
-
-# user_id = admin user in SP machine
-
 def client_for_admin_user():  
-    auth = v3.Password(auth_url=OS_AUTH_URL,
-                       user_id=OS_USER_ID,
-                       user_domain_name=OS_DOMAIN_ID,
-                       password=OS_PASSWORD,
-                       project_domain_name=OS_DOMAIN_ID,
-                       project_id=OS_PROJECT_ID)
+    auth = v3.Password(auth_url="http://128.52.183.216:5000/v3",
+                       user_id="aa43b03c0d3740418d7d785e504a9fcc",
+                       password="nomoresecrete",
+                       project_id="dc00b3b49b444c35aca7c174e2774b23")
     session = ksc_session.Session(auth=auth)
     return keystone_v3.Client(session=session)
 
@@ -54,27 +40,28 @@ def create_role(client, name):
 
 def create_project(client, name):  
     try:
-        r = client.projects.create(name=name)
+        r = client.projects.create(name=name, domain='default')
     except:
-        r = client.projects.find(name=name)
+        r = client.projects.find(name=name, domain='default')
     return r
 
 print('\nCreating domain1')  
 domain1 = create_domain(client, 'domain1')
 
-print('\nCreating project1')
-project1 = create_project(client, 'project1', domain='default')
-
 print('\nCreating group1')  
 group1 = create_group(client, 'group1', domain1)
 
-print('\nCreating role Member')  
-role1 = create_role(client, 'Member')
+print('\nCreating project fed-demo')
+project1 = create_project(client, 'fed-demo')
+admin_project = client.projects.find(name='admin')
 
-# grant roles of project or domain of the group
+print('\nCreating role Member')  
+role1 = create_role(client, '_member_')
+
 print('\nGrant role Member to group1 in domain1')  
 client.roles.grant(role1, group=group1, domain=domain1)
 client.roles.grant(role1, group=group1, project=project1)
+client.roles.grant(role1, group=group1, project=admin_project)
 
 print('\nList group1 role assignments')  
 client.role_assignments.list(group=group1) 
@@ -84,8 +71,8 @@ def create_mapping(client, mapping_id, rules):
         m = client.federation.mappings.create(
             mapping_id=mapping_id, rules=rules)
     except:
-        m = client.federation.mappings.find(
-            mapping_id=mapping_id)
+        m = client.federation.mappings.update(
+            mapping=mapping_id, rules=rules)
     return m
 
 print('\nCreating mapping')  
@@ -94,7 +81,10 @@ rules = [
     "local": [
         {
             "user": {
-                "name": "federated_user"
+                "name": "federated_user",
+                "domain": {
+                    "name": "default"
+                }
             },
             "group": {
                 "id": group1.id
@@ -131,13 +121,13 @@ def create_protocol(client, protocol_id, idp, mapping):
                                                identity_provider=idp,
                                                mapping=mapping)
     except:
-        p = client.federation.protocols.find(protocol_id=protocol_id)
+        p = client.federation.protocols.update(identity_provider=idp, protocol=protocol_id, mapping=mapping)
     return p
 
 
 print('\nRegister keystone-idp')  
 idp1 = create_idp(client, id='keystone-idp',  
-                  remote_id='https://128.52.181.124:5000/v3/OS-FEDERATION/saml2/idp')
+                  remote_id='http://128.52.183.234:5000/v3/OS-FEDERATION/saml2/idp')
 
 print('\nRegister protocol')  
 protocol1 = create_protocol(client, protocol_id='saml2', idp=idp1,  
