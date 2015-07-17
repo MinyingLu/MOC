@@ -5,7 +5,7 @@ This repository contains part of the works I've been doing with Massachusetts Op
 The main projects that I'm working on are:
 * Openstack Mix&Match Federation
   * Keystone to Keystone federation
-  * Using K2K federation to do application, such as using attach volume from remote cinder (in Service Provider) to a local instance (in Identity Provider)
+  * Using K2K federation to do application between 2 openstacks, such as using attach volume from remote cinder (in Service Provider) to a local instance (in Identity Provider)
     * demoed in keystone-midcycle
   * We are planning to present this on the Tokyo openstack summit in October
 
