@@ -1,0 +1,25 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+export HADOOP_HOME=/usr
+export JAVA_HOME=/usr/lib/jvm/java-openjdk
+export HADOOP_CONF_DIR=/etc/hadoop/conf
+export PATH=${HADOOP_HOME}/bin:${PATH}
+
+export MAHOUT_HOME=/usr/bin/mahout
+export PATH=${MAHOUT_HOME}/bin:${PATH}
+
+#export HADOOP_HOME=/home/ugurkaynar/hadoop
+#export PATH=${HADOOP_HOME}/bin:${PATH}
+
+#export HIVE_HOME=/home/hadoop/apache-hive-0.14.0-bin
+export HIVE_HOME=/usr/bin/hive
+export HIVE_CONF_DIR=$HIVE_HOME/conf
+export HIVE_LIB=$HIVE_HOME/lib
+export CLASSPATH=$CLASSPATH:$HIVE_LIB
+export PATH=${HIVE_HOME}/bin/:${PATH}
+
+# User specific aliases and functions
