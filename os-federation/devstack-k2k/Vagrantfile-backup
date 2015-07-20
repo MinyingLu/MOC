@@ -1,0 +1,66 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'vagrant-openstack-provider'
+
+$script = <<SCRIPT
+sudo apt-get update 
+sudo apt-get install -y git vim python-pip 
+git clone https://github.com/openstack-dev/devstack.git devstack
+# make stack user, change ownership of devstack folder. 
+sudo devstack/tools/create-stack-user.sh
+sudo cp devstack/samples/local.conf devstack/localrc 
+sudo chown -R stack devstack
+cd devstack/
+sudo su stack -c "./stack.sh"
+SCRIPT
+
+Vagrant.configure(2) do |config|
+  # define instances in loop
+  (1..1).each do |i|
+    config.vm.define "devstack#{i}" do |devstack|
+      devstack.ssh.username = 'ubuntu'
+      # change to your own private key
+      devstack.ssh.private_key_path = '~/.ssh/csail-mylu-key.pem'
+
+      # define os instance
+      devstack.vm.provider :openstack do |os|
+        os.openstack_auth_url   = 'https://nimbus.csail.mit.edu:5001/v2.0/tokens'   
+        os.username             = ENV['OS_USERNAME']
+        os.password             = ENV['OS_PASSWORD']
+        os.tenant_name          = ENV['OS_TENANT_NAME']
+        os.flavor               = '4G-1C-32D'
+        os.server_name          = "devstack#{i}"
+        os.image                = '4dc46de2-e7f8-457d-b3fb-eb082d81d87b'
+        os.endpoint_type        = 'publicURL'
+        # name of public key corresponding to ur private key on os project
+        os.sync_method          = 'none'
+        os.keypair_name         = 'csail-mylu-key' 
+      end
+
+      devstack.vm.provision "shell" do |shell|
+        shell.inline = "cat /dev/null > /etc/hosts"
+      end
+
+      devstack.vm.hostname = "devstack#{i}"
+      devstack.vm.provision :hostmanager
+
+      # shell command to update vm and install devstack
+      devstack.vm.provision "shell", inline: $script
+
+    end
+  end
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+  # config.vm.synced_folder "../data", "/vagrant_data"
+
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   sudo apt-get update
+  #   sudo apt-get install -y apache2
+  # SHELL
+end
