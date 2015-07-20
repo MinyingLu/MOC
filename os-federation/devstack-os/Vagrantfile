@@ -6,68 +6,90 @@ require 'vagrant-openstack-provider'
 $script = <<SCRIPT
 sudo apt-get update 
 sudo apt-get install -y git vim python-pip 
-git clone -b stable/kilo https://github.com/openstack-dev/devstack.git devstack
-# make stack user, change ownership of devstack folder. 
+git clone https://github.com/openstack-dev/devstack.git devstack
+# Make stack user, change ownership of devstack folder. 
+# Build DevStack
 sudo devstack/tools/create-stack-user.sh
 sudo cp devstack/samples/local.conf devstack/localrc 
 sudo chown -R stack devstack
 cd devstack/
 sudo su stack -c "./stack.sh"
+
+# K2K federation 
+
 SCRIPT
 
-# All Vagrant configuration is done below. The "2" in Vagrant.configure
-# configures the configuration version (we support older styles for
-# backwards compatibility). Please don't change it unless you know what
-# you're doing.
 Vagrant.configure(2) do |config|
   # define instances in loop
-  (1..2).each do |i|
-    config.vm.define "devstack#{i}" do |devstack|
-      devstack.ssh.username = 'ubuntu'
-      # change to your own private key
-      devstack.ssh.private_key_path = '~/.ssh/csail-mylu-key.pem'
+  config.vm.define "k2k-auto-sp" do |devstack|
+    devstack.ssh.username = 'ubuntu'
+    # change to your own private key
+    devstack.ssh.private_key_path = '~/.ssh/csail-mylu-key.pem'
 
-      # define os instance
-      devstack.vm.provider :openstack do |os|
-        os.openstack_auth_url   = 'https://nimbus.csail.mit.edu:5001/v2.0/tokens'   
-        os.username             = ENV['OS_USERNAME']
-        os.password             = ENV['OS_PASSWORD']
-        os.tenant_name          = ENV['OS_TENANT_NAME']
-        os.flavor               = '4G-1C-32D'
-        os.server_name          = "vagrant-devstack#{i}"
-        os.image                = '4dc46de2-e7f8-457d-b3fb-eb082d81d87b'
-        os.endpoint_type        = 'publicURL'
-        # name of public key corresponding to ur private key on os project
-        os.sync_method          = 'none'
-        os.keypair_name         = 'csail-mylu-key' 
-      end
-
-      devstack.vm.provision "shell" do |shell|
-        shell.inline = "cat /dev/null > /etc/hosts"
-      end
-
-      devstack.vm.hostname = "vagrant-devstack#{i}"
-      devstack.vm.provision :hostmanager
-
-      # shell command to update vm and install devstack
-      devstack.vm.provision "shell", inline: $script
-
+    # define os instance
+    devstack.vm.provider :openstack do |os|
+      os.openstack_auth_url   = 'https://nimbus.csail.mit.edu:5001/v2.0/tokens'   
+      os.username             = ENV['OS_USERNAME']
+      os.password             = ENV['OS_PASSWORD']
+      os.tenant_name          = ENV['OS_TENANT_NAME']
+      os.flavor               = '4G-1C-32D'
+      os.server_name          = "k2k-auto-sp"
+      os.image                = '4dc46de2-e7f8-457d-b3fb-eb082d81d87b'
+      os.endpoint_type        = 'publicURL'
+      # name of public key corresponding to ur private key on os project
+      os.sync_method          = 'rsync'
+      os.keypair_name         = 'csail-mylu-key' 
     end
+
+
+    devstack.vm.provision "shell" do |shell|
+      shell.inline = "sudo apt-get install -y libapache2-mod-shib2"
+    end
+
+    devstack.vm.hostname = "k2k-auto-sp"
+    devstack.vm.provision :hostmanager
+
+    # shell command to update vm and install devstack
+    devstack.vm.provision "shell", inline: $script
+
+    devstack.vm.synced_folder "../SP", "/opt/stack/SP"
   end
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
+  
+  config.vm.define "k2k-auto-idp" do |devstack|
+    devstack.ssh.username = 'ubuntu'
+    # change to your own private key
+    devstack.ssh.private_key_path = '~/.ssh/csail-mylu-key.pem'
 
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
+    # define os instance
+    devstack.vm.provider :openstack do |os|
+      os.openstack_auth_url   = 'https://nimbus.csail.mit.edu:5001/v2.0/tokens'   
+      os.username             = ENV['OS_USERNAME']
+      os.password             = ENV['OS_PASSWORD']
+      os.tenant_name          = ENV['OS_TENANT_NAME']
+      os.flavor               = '4G-1C-32D'
+      os.server_name          = "k2k-auto-idp"
+      os.image                = '4dc46de2-e7f8-457d-b3fb-eb082d81d87b'
+      os.endpoint_type        = 'publicURL'
+      # name of public key corresponding to ur private key on os project
+      os.sync_method          = 'rsync'
+      os.keypair_name         = 'csail-mylu-key' 
+    end
 
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
+    devstack.vm.hostname = "k2k-auto-idp"
+    devstack.vm.provision :hostmanager
 
+    # shell command to update vm and install devstack
+    devstack.vm.provision "shell", inline: $script
+    
+    devstack.vm.synced_folder "../IdP", "/opt/stack/IdP"
+
+    devstack.vm.provision "shell", inline: <<-SHELL
+      sudo apt-get install -y xmlsec1
+      sudo pip install pysaml2
+      keystone-manage saml_idp_metadata > /etc/keystone/keystone_idp_metadata.xml 
+    SHELL
+
+  end
   # Share an additional folder to the guest VM. The first argument is
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
