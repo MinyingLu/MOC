@@ -1,0 +1,21 @@
+ProxyChains-3.1 (http://proxychains.sf.net)
+tempest.api.compute.images.test_images_oneserver.ImagesOneServerTestJSON
+    test_create_image_specify_multibyte_character_image_name[id-3b7c6fe4-dfe7-477c-9243-b06359db51e6]OK  1179.33
+
+Slowest 1 tests took 1179.33 secs:
+tempest.api.compute.images.test_images_oneserver.ImagesOneServerTestJSON
+    test_create_image_specify_multibyte_character_image_name[id-3b7c6fe4-dfe7-477c-9243-b06359db51e6]  1179.33
+
+Ran 1 test in 1319.632s
+
+OK
+running=OS_STDOUT_CAPTURE=${OS_STDOUT_CAPTURE:-1} \
+OS_STDERR_CAPTURE=${OS_STDERR_CAPTURE:-1} \
+OS_TEST_TIMEOUT=${OS_TEST_TIMEOUT:-500} \
+OS_TEST_LOCK_PATH=${OS_TEST_LOCK_PATH:-${TMPDIR:-'/tmp'}} \
+${PYTHON:-python} -m subunit.run discover -t ${OS_TOP_LEVEL:-./} ${OS_TEST_PATH:-./tempest/test_discover} --list 
+running=OS_STDOUT_CAPTURE=${OS_STDOUT_CAPTURE:-1} \
+OS_STDERR_CAPTURE=${OS_STDERR_CAPTURE:-1} \
+OS_TEST_TIMEOUT=${OS_TEST_TIMEOUT:-500} \
+OS_TEST_LOCK_PATH=${OS_TEST_LOCK_PATH:-${TMPDIR:-'/tmp'}} \
+${PYTHON:-python} -m subunit.run discover -t ${OS_TOP_LEVEL:-./} ${OS_TEST_PATH:-./tempest/test_discover}  --load-list /tmp/tmpkZQ3jR

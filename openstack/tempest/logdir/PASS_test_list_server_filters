@@ -1,0 +1,45 @@
+ProxyChains-3.1 (http://proxychains.sf.net)
+|S-chain|-<>-127.0.0.1:8888-<><>-140.247.152.207:8774-tempest.api.compute.servers.test_list_server_filters.ListServerFiltersTestJSON
+    test_list_servers_detailed_filter_by_flavor[id-80c574cc-0925-44ba-8602-299028357dd9]OK  0.79
+    test_list_servers_detailed_filter_by_image[id-b3304c3b-97df-46d2-8cd3-e2b6659724e7]SKIP  0.00
+|S-chain|-<>-127.0.0.1:8888-<><>-140.247.152.207:8774-    test_list_servers_detailed_filter_by_server_name[id-f9eb2b70-735f-416c-b260-9914ac6181e4]OK  0.76
+|S-chain|-<>-127.0.0.1:8888-<><>-140.247.152.207:8774-    test_list_servers_detailed_filter_by_server_status[id-de2612ab-b7dd-4044-b0b1-d2539601911f]OK  0.48
+|S-chain|-<>-127.0.0.1:8888-<><>-140.247.152.207:8774-    test_list_servers_detailed_limit_results[id-67aec2d0-35fe-4503-9f92-f13272b867ed]OK  0.60
+|S-chain|-<>-127.0.0.1:8888-<><>-140.247.152.207:8774-    test_list_servers_filter_by_exceed_limit[id-37791bbd-90c0-4de0-831e-5f38cba9c6b3]OK  0.26
+|S-chain|-<>-127.0.0.1:8888-<><>-140.247.152.207:8774-    test_list_servers_filter_by_flavor[id-573637f5-7325-47bb-9144-3476d0416908]OK  0.17
+    test_list_servers_filter_by_image[id-05e8a8e7-9659-459a-989d-92c2f501f4ba]SKIP  0.00
+|S-chain|-<>-127.0.0.1:8888-<><>-140.247.152.207:8774-    test_list_servers_filter_by_limit[id-614cdfc1-d557-4bac-915b-3e67b48eee76]OK  0.15
+|S-chain|-<>-127.0.0.1:8888-<><>-140.247.152.207:8774-    test_list_servers_filter_by_server_name[id-9b067a7b-7fee-4f6a-b29c-be43fe18fc5a]OK  0.12
+|S-chain|-<>-127.0.0.1:8888-<><>-140.247.152.207:8774-    test_list_servers_filter_by_server_status[id-ca78e20e-fddb-4ce6-b7f7-bcbf8605e66e]OK  0.15
+|S-chain|-<>-127.0.0.1:8888-<><>-140.247.152.207:8774-    test_list_servers_filter_by_shutoff_status[id-451dbbb2-f330-4a9f-b0e1-5f5d2cb0f34c]OK  67.00
+|S-chain|-<>-127.0.0.1:8888-<><>-140.247.152.207:8774-    test_list_servers_filter_by_zero_limit[id-b1495414-2d93-414c-8019-849afe8d319e]OK  0.38
+|S-chain|-<>-127.0.0.1:8888-<><>-140.247.152.207:8774-    test_list_servers_filtered_by_ip[id-43a1242e-7b31-48d1-88f2-3f72aa9f2077]OK  0.23
+    test_list_servers_filtered_by_ip_regex[id-a905e287-c35e-42f2-b132-d02b09f3654a]SKIP  0.00
+|S-chain|-<>-127.0.0.1:8888-<><>-140.247.152.207:8774-    test_list_servers_filtered_by_name_regex[id-24a89b0c-0d55-4a28-847f-45075f19b27b]OK  0.28
+    test_list_servers_filtered_by_name_wildcard[id-e9f624ee-92af-4562-8bec-437945a18dcb]OK  2.67
+
+Slowest 9 tests took 73.22 secs:
+tempest.api.compute.servers.test_list_server_filters.ListServerFiltersTestJSON
+    test_list_servers_detailed_filter_by_flavor[id-80c574cc-0925-44ba-8602-299028357dd9]  0.79
+    test_list_servers_detailed_filter_by_server_name[id-f9eb2b70-735f-416c-b260-9914ac6181e4]  0.76
+    test_list_servers_detailed_filter_by_server_status[id-de2612ab-b7dd-4044-b0b1-d2539601911f]  0.48
+    test_list_servers_detailed_limit_results[id-67aec2d0-35fe-4503-9f92-f13272b867ed]  0.60
+    test_list_servers_filter_by_exceed_limit[id-37791bbd-90c0-4de0-831e-5f38cba9c6b3]  0.26
+    test_list_servers_filter_by_shutoff_status[id-451dbbb2-f330-4a9f-b0e1-5f5d2cb0f34c]  67.00
+    test_list_servers_filter_by_zero_limit[id-b1495414-2d93-414c-8019-849afe8d319e]  0.38
+    test_list_servers_filtered_by_name_regex[id-24a89b0c-0d55-4a28-847f-45075f19b27b]  0.28
+    test_list_servers_filtered_by_name_wildcard[id-e9f624ee-92af-4562-8bec-437945a18dcb]  2.67
+
+Ran 17 tests in 269.305s
+
+OK
+running=OS_STDOUT_CAPTURE=${OS_STDOUT_CAPTURE:-1} \
+OS_STDERR_CAPTURE=${OS_STDERR_CAPTURE:-1} \
+OS_TEST_TIMEOUT=${OS_TEST_TIMEOUT:-500} \
+OS_TEST_LOCK_PATH=${OS_TEST_LOCK_PATH:-${TMPDIR:-'/tmp'}} \
+${PYTHON:-python} -m subunit.run discover -t ${OS_TOP_LEVEL:-./} ${OS_TEST_PATH:-./tempest/test_discover} --list 
+running=OS_STDOUT_CAPTURE=${OS_STDOUT_CAPTURE:-1} \
+OS_STDERR_CAPTURE=${OS_STDERR_CAPTURE:-1} \
+OS_TEST_TIMEOUT=${OS_TEST_TIMEOUT:-500} \
+OS_TEST_LOCK_PATH=${OS_TEST_LOCK_PATH:-${TMPDIR:-'/tmp'}} \
+${PYTHON:-python} -m subunit.run discover -t ${OS_TOP_LEVEL:-./} ${OS_TEST_PATH:-./tempest/test_discover}  --load-list /tmp/tmp47iHHT
