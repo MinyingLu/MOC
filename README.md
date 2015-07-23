@@ -4,6 +4,7 @@ This repository contains part of the works I've been doing with Massachusetts Op
 
 The main projects that I'm working on are:
 * Openstack Mix&Match Federation
+  * see our [public wiki](https://github.com/CCI-MOC/moc-public/wiki/Mix-and-Match-Federation) page for more detail
   * Keystone to Keystone federation
   * Using K2K federation to do application between 2 openstacks, such as using attach volume from remote cinder (in Service Provider) to a local instance (in Identity Provider)
     * demoed in keystone-midcycle
