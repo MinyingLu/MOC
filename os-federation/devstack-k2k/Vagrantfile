@@ -21,7 +21,7 @@ SCRIPT
 
 Vagrant.configure(2) do |config|
   # define instances in loop
-  config.vm.define "k2k-auto-sp" do |devstack|
+  config.vm.define "k2k-demo2-sp" do |devstack|
     devstack.ssh.username = 'ubuntu'
     # change to your own private key
     devstack.ssh.private_key_path = '~/.ssh/csail-mylu-key.pem'
@@ -33,7 +33,7 @@ Vagrant.configure(2) do |config|
       os.password             = ENV['OS_PASSWORD']
       os.tenant_name          = ENV['OS_TENANT_NAME']
       os.flavor               = '4G-1C-32D'
-      os.server_name          = "k2k-auto-sp"
+      os.server_name          = "k2k-demo2-sp"
       os.image                = '4dc46de2-e7f8-457d-b3fb-eb082d81d87b'
       os.endpoint_type        = 'publicURL'
       # name of public key corresponding to ur private key on os project
@@ -41,21 +41,16 @@ Vagrant.configure(2) do |config|
       os.keypair_name         = 'csail-mylu-key' 
     end
 
-
-    devstack.vm.provision "shell" do |shell|
-      shell.inline = "sudo apt-get install -y libapache2-mod-shib2"
-    end
-
-    devstack.vm.hostname = "k2k-auto-sp"
+    devstack.vm.hostname = "k2k-demo2-sp"
     devstack.vm.provision :hostmanager
 
     # shell command to update vm and install devstack
     devstack.vm.provision "shell", inline: $script
 
-    devstack.vm.synced_folder "../SP", "/opt/stack/SP"
+    devstack.vm.synced_folder "../auto-SP", "/opt/stack/SP"
   end
   
-  config.vm.define "k2k-auto-idp" do |devstack|
+  config.vm.define "k2k-demo2-idp" do |devstack|
     devstack.ssh.username = 'ubuntu'
     # change to your own private key
     devstack.ssh.private_key_path = '~/.ssh/csail-mylu-key.pem'
@@ -67,7 +62,7 @@ Vagrant.configure(2) do |config|
       os.password             = ENV['OS_PASSWORD']
       os.tenant_name          = ENV['OS_TENANT_NAME']
       os.flavor               = '4G-1C-32D'
-      os.server_name          = "k2k-auto-idp"
+      os.server_name          = "k2k-demo2-idp"
       os.image                = '4dc46de2-e7f8-457d-b3fb-eb082d81d87b'
       os.endpoint_type        = 'publicURL'
       # name of public key corresponding to ur private key on os project
@@ -75,19 +70,13 @@ Vagrant.configure(2) do |config|
       os.keypair_name         = 'csail-mylu-key' 
     end
 
-    devstack.vm.hostname = "k2k-auto-idp"
+    devstack.vm.hostname = "k2k-demo2-idp"
     devstack.vm.provision :hostmanager
 
     # shell command to update vm and install devstack
     devstack.vm.provision "shell", inline: $script
     
-    devstack.vm.synced_folder "../IdP", "/opt/stack/IdP"
-
-    devstack.vm.provision "shell", inline: <<-SHELL
-      sudo apt-get install -y xmlsec1
-      sudo pip install pysaml2
-      keystone-manage saml_idp_metadata > /etc/keystone/keystone_idp_metadata.xml 
-    SHELL
+    devstack.vm.synced_folder "../auto-IdP", "/opt/stack/IdP"
 
   end
   # Share an additional folder to the guest VM. The first argument is
