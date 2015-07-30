@@ -17,7 +17,7 @@
 
 # BigTop OpenStack VM Provisioner
 
-** This is a half way done version of the automation deployment of hadoop clusters on openstack cloud. The up-to-date version has been upstreamed to Apache/Bigtop master branch [vagrant-puppet-openstack](https://github.com/apache/bigtop/tree/master/bigtop-deploy/vm/vagrant-puppet-openstack)
+** This is a half way done version of the automation deployment of hadoop clusters on openstack cloud. The up-to-date version has been upstreamed to Apache/Bigtop master branch [vagrant-puppet-openstack](https://github.com/apache/bigtop/tree/master/bigtop-deploy/vm/vagrant-puppet-openstack)**
 
 ## Overview 
 
