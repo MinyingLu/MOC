@@ -17,6 +17,8 @@
 
 # BigTop OpenStack VM Provisioner
 
+** This is a half way done version of the automation deployment of hadoop clusters on openstack cloud. The up-to-date version has been upstreamed to Apache/Bigtop master branch [vagrant-puppet-openstack](https://github.com/apache/bigtop/tree/master/bigtop-deploy/vm/vagrant-puppet-openstack)
+
 ## Overview 
 
 This vagrant recipe is based on the vagrant recipe from `vagrant-puppet-vm` with added feature of vagrant-openstack-provider plugin. The plugin allows us to deploy a Hadoop cluster on an actual virtual environment as if we are deploying on local vagrant vms. It will spin up and provision the vm(s) for us.
