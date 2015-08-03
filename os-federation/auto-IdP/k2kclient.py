@@ -22,7 +22,6 @@ class K2KClient(object):
                            password=self.password,
                            project_id=self.project_id)
         self.session = ksc_session.Session(auth=auth, verify=False)
-        #self.session.auth.get_auth_ref(self.session)
         self.token = self.session.auth.get_token(self.session)
 
     def _generate_token_json(self):
@@ -116,7 +115,7 @@ class K2KClient(object):
         # project_id can be select from the list in the previous step
         token = json.dumps(self._get_scoped_token_json(project_id))
         print token
-        url = 'http://128.52.183.216:5000/v3/auth/tokens'
+        url = 'http://' + self.sp_ip + ':5000/v3/auth/tokens'
         headers = {'x-auth-token': self.fed_token_id,
         'Content-Type': 'application/json'}
         r = self.session.post(url=url, headers=headers, data=token,

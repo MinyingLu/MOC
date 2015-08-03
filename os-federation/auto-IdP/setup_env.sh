@@ -1,4 +1,4 @@
-IDP_IP=$(/sbin/ifconfig eth0 | grep "inet addr" | awk -F:'{print $2}' | awk '{print $1}')
+IDP_IP=$(/sbin/ifconfig eth0 | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}')
 
 sudo apt-get install -y xmlsec1  
 sudo pip install pysaml2
