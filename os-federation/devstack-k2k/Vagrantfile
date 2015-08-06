@@ -4,16 +4,26 @@
 require 'vagrant-openstack-provider'
 
 $script = <<SCRIPT
+# prep env and git clone
 sudo apt-get update 
-sudo apt-get install -y git vim python-pip 
+sudo apt-get install -y git vim 
 git clone https://github.com/openstack-dev/devstack.git devstack
+cd devstack
+git checkout stable/kilo
+#git reset aaae79b095fb4d4029077ed490adc61bf9e1eb46 
+# between 47e68afd674fb387b99216f94eac3eb477a6e077(7.14) | 7aaaf9090145b3e84e1d9a3c90e12bd370f5f31f(7/11) and 54ee8a82a837eb2b28746c77e0259ec326ab15cc(7/15) identity-user page is fucked up
+# identity-project page is fucked up all the way from e6f37b91e5cd5b0f70d2be1e75eb4f61adc1e16a 
+# now trying d4da210ffb2a9f1274705ba04ec56337e7e1ea1c(7/23)
+# aaae79b095fb4d4029077ed490adc61bf9e1eb46 now 
+# worked for /etc/keystone/ssl
+# but not horizon->identity pages
+# d523a71514550a85657356ae7ffe4085800b42c6 still bad.. no identity/project page
+#git reset --hard HEAD
 # Make stack user, change ownership of devstack folder. 
 # Build DevStack
-sudo devstack/tools/create-stack-user.sh
-sudo cp devstack/samples/local.conf devstack/localrc 
-sudo chown -R stack devstack
-cd devstack/
-sudo su stack -c "./stack.sh"
+sudo cp samples/local.conf .
+sudo chown -R ubuntu *
+sudo su ubuntu -c "./stack.sh"
 
 # K2K federation 
 
@@ -21,7 +31,10 @@ SCRIPT
 
 Vagrant.configure(2) do |config|
   # define instances in loop
-  config.vm.define "k2k-demo2-sp" do |devstack|
+  config.hostmanager.enabled = true
+  #config.hostmanager.manage_host = true  # Annoyingly ask for pw
+
+  config.vm.define "k2k-idp" do |devstack|
     devstack.ssh.username = 'ubuntu'
     # change to your own private key
     devstack.ssh.private_key_path = '~/.ssh/csail-mylu-key.pem'
@@ -33,7 +46,7 @@ Vagrant.configure(2) do |config|
       os.password             = ENV['OS_PASSWORD']
       os.tenant_name          = ENV['OS_TENANT_NAME']
       os.flavor               = '4G-1C-32D'
-      os.server_name          = "k2k-demo2-sp"
+      os.server_name          = "k2k-idp"
       os.image                = '4dc46de2-e7f8-457d-b3fb-eb082d81d87b'
       os.endpoint_type        = 'publicURL'
       # name of public key corresponding to ur private key on os project
@@ -41,16 +54,21 @@ Vagrant.configure(2) do |config|
       os.keypair_name         = 'csail-mylu-key' 
     end
 
-    devstack.vm.hostname = "k2k-demo2-sp"
+    devstack.vm.provision "shell", inline: <<-SHELL
+      cat /dev/null > /etc/hosts
+    SHELL
+
+    devstack.vm.hostname = "k2k-idp"
     devstack.vm.provision :hostmanager
 
     # shell command to update vm and install devstack
     devstack.vm.provision "shell", inline: $script
 
+    devstack.vm.synced_folder "../auto-IdP", "/opt/stack/IdP"
     devstack.vm.synced_folder "../auto-SP", "/opt/stack/SP"
   end
-  
-  config.vm.define "k2k-demo2-idp" do |devstack|
+
+  config.vm.define "k2k-sp" do |devstack|
     devstack.ssh.username = 'ubuntu'
     # change to your own private key
     devstack.ssh.private_key_path = '~/.ssh/csail-mylu-key.pem'
@@ -62,7 +80,7 @@ Vagrant.configure(2) do |config|
       os.password             = ENV['OS_PASSWORD']
       os.tenant_name          = ENV['OS_TENANT_NAME']
       os.flavor               = '4G-1C-32D'
-      os.server_name          = "k2k-demo2-idp"
+      os.server_name          = "k2k-sp"
       os.image                = '4dc46de2-e7f8-457d-b3fb-eb082d81d87b'
       os.endpoint_type        = 'publicURL'
       # name of public key corresponding to ur private key on os project
@@ -70,26 +88,17 @@ Vagrant.configure(2) do |config|
       os.keypair_name         = 'csail-mylu-key' 
     end
 
-    devstack.vm.hostname = "k2k-demo2-idp"
+    devstack.vm.provision "shell", inline: <<-SHELL
+      cat /dev/null > /etc/hosts
+    SHELL
+
+    devstack.vm.hostname = "k2k-sp"
     devstack.vm.provision :hostmanager
 
     # shell command to update vm and install devstack
     devstack.vm.provision "shell", inline: $script
-    
-    devstack.vm.synced_folder "../auto-IdP", "/opt/stack/IdP"
 
+    devstack.vm.synced_folder "../auto-SP", "/home/ubuntu/SP"
+    devstack.vm.synced_folder "../auto-IdP", "/home/ubuntu/IdP"
   end
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
-
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   sudo apt-get update
-  #   sudo apt-get install -y apache2
-  # SHELL
 end
