@@ -1,19 +1,28 @@
 import json  
 import os
 import time
+import sys
 
 from keystoneclient import session as ksc_session  
 from keystoneclient.auth.identity import v3  
 from keystoneclient.v3 import client as keystone_v3
 
+try:
+    OS_AUTH_URL = os.environ['OS_AUTH_URL']
+    OS_PROJECT_ID = os.environ['OS_PROJECT_ID']
+    OS_USER_ID = os.environ['OS_USER_ID']
+except KeyError as e:
+    raise SystemExit('%s environment variable not set.' % e)
+
+sp_ip = sys.argv[1]
 
 class K2KClient(object):  
     def __init__(self):
         self.sp_id = 'keystone-sp'
-        self.sp_ip = '128.52.183.216'
-        self.auth_url = "http://128.52.183.234:5000/v3"
-        self.project_id = "a0683f4059654c63ae4f1663b461088d"
-        self.user_id = "caf9b2e813aa41f4b12eb6f46241828c"
+        self.sp_ip = sp_ip
+        self.auth_url = OS_AUTH_URL
+        self.project_id = OS_PROJECT_ID
+        self.user_id = OS_USER_ID
         self.password = "nomoresecrete"
 
     def v3_authenticate(self):
@@ -129,15 +138,15 @@ client = K2KClient()
 client.v3_authenticate()
 client.get_saml2_ecp_assertion()
 print('ECP wrapped SAML assertion: %s' % client.assertion)
-#client.exchange_assertion()
-#print('Unscoped token id: %s' % client.fed_token_id)
-#print "==================SCOPE TOKEN================="
-#project_list = client.list_federated_projects()
-#project_id = str(project_list[u'projects'][1][u'id'])
-#print('scope to project [%s]' % project_list[u'projects'][1]['name'])
-#print ('project id: %s' % project_id)
-#client.scope_token(project_id=project_id)
-#print('Scoped token id: %s' % client.scoped_token_id)
+client.exchange_assertion()
+print('Unscoped token id: %s' % client.fed_token_id)
+print "==================SCOPE TOKEN================="
+project_list = client.list_federated_projects()
+project_id = str(project_list[u'projects'][1][u'id'])
+print('scope to project [%s]' % project_list[u'projects'][1]['name'])
+print ('project id: %s' % project_id)
+client.scope_token(project_id=project_id)
+print('Scoped token id: %s' % client.scoped_token_id)
 #client.scoped_auth_ref = client.r.json()
 #client.scoped_auth = v3.Token(auth_url="http://128.52.183.216:5000/v3", 
 #                              token=client.scoped_token_id)
@@ -161,14 +170,14 @@ def main():
     print ('project id: %s' % project_id)
     client.scope_token(project_id=project_id)
     print('Scoped token id: %s' % client.scoped_token_id)
-    client.scoped_auth_ref = client.r.json()
-    client.scoped_auth = v3.Token(auth_url="http://128.52.183.216:5000/v3", 
-                                token=client.scoped_token_id)
-    client.scoped_auth.auth_ref = client.scoped_auth_ref
-    client.scoped_session = ksc_session.Session(auth=client.scoped_auth, verify=False)
-    client.unscoped_auth = v3.Token(auth_url="http://128.52.183.216:5000/v3", 
-                                token=client.fed_token_id)
-    client.unscoped_session = ksc_session.Session(auth=client.unscoped_auth, verify=False)
+#    client.scoped_auth_ref = client.r.json()
+#    client.scoped_auth = v3.Token(auth_url="http://128.52.183.216:5000/v3", 
+#                                token=client.scoped_token_id)
+#    client.scoped_auth.auth_ref = client.scoped_auth_ref
+#    client.scoped_session = ksc_session.Session(auth=client.scoped_auth, verify=False)
+#    client.unscoped_auth = v3.Token(auth_url="http://128.52.183.216:5000/v3", 
+#                                token=client.fed_token_id)
+#    client.unscoped_session = ksc_session.Session(auth=client.unscoped_auth, verify=False)
 
 if __name__ == "__main__":  
     main()

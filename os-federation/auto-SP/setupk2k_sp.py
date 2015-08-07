@@ -1,14 +1,23 @@
-import os
+import os, sys
 
 from keystoneclient import session as ksc_session  
 from keystoneclient.auth.identity import v3  
 from keystoneclient.v3 import client as keystone_v3
 
+idp_ip = sys.argv[1]
+
+try:
+    OS_AUTH_URL = os.environ['OS_AUTH_URL']
+    OS_PROJECT_ID = os.environ['OS_PROJECT_ID']
+    OS_USER_ID = os.environ['OS_USER_ID']
+except KeyError as e:
+    raise SystemExit('%s environment variable not set.' % e)
+
 def client_for_admin_user():  
-    auth = v3.Password(auth_url="http://128.52.183.216:5000/v3",
-                       user_id="aa43b03c0d3740418d7d785e504a9fcc",
+    auth = v3.Password(auth_url=OS_AUTH_URL,
+                       user_id=OS_USER_ID,
                        password="nomoresecrete",
-                       project_id="dc00b3b49b444c35aca7c174e2774b23")
+                       project_id=OS_PROJECT_ID)
     session = ksc_session.Session(auth=auth)
     return keystone_v3.Client(session=session)
 
@@ -127,7 +136,7 @@ def create_protocol(client, protocol_id, idp, mapping):
 
 print('\nRegister keystone-idp')  
 idp1 = create_idp(client, id='keystone-idp',  
-                  remote_id='http://128.52.183.234:5000/v3/OS-FEDERATION/saml2/idp')
+                  remote_id='http://' + idp_ip + ':5000/v3/OS-FEDERATION/saml2/idp')
 
 print('\nRegister protocol')  
 protocol1 = create_protocol(client, protocol_id='saml2', idp=idp1,  
