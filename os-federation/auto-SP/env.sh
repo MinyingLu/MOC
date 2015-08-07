@@ -1,7 +1,4 @@
-# prompt for idp ip address
-
-echo "Please enter the IP address for IdP: "
-read -r IDP_IP
+IDP_IP=$(/bin/cat /etc/hosts | grep k2k-idp | awk '{print $1}')
 
 echo "IDP ip address is ${IDP_IP}"
 echo "install shibboleth"
@@ -19,13 +16,12 @@ sudo sed -i '49i\-->' /etc/shibboleth/shibboleth2.xml
 sudo sed -i "50i\            <SSO entityID=\"http://${IDP_IP}:5000/v3/OS-FEDERATION/saml2/idp\">\n              SAML2 SAML1\n            </SSO>" /etc/shibboleth/shibboleth2.xml
 sudo sed -i "87i\        <MetadataProvider type=\"XML\" uri=\"http://${IDP_IP}:5000/v3/OS-FEDERATION/saml2/metadata\"/>" /etc/shibboleth/shibboleth2.xml
 
+echo "generate shibboleth key"
 sudo shib-keygen -f 
+echo "restart service - shibd and apache2"
 sudo service shibd restart
 sudo service apache2 restart  
+echo "make sure that shib2 is enabled"
 sudo a2enmod shib2  
-cp ~/devstack/accrc/admin/admin ~
-echo "\nAt this point all the basic setup is done, you need to register the endpoints with the pythons script setupk2k_sp.py I provided\n"
-echo "You need to change the admin rc file under ~ directory, export OS_PROJECT_ID and OS_USER_ID and change OS_AUTH_URL to /v3 instead of /v2.0\n"
-echo "Now you can run \n    source ~/admin    \n"
-echo "And then you can run \n    python setupk2k_sp.py idp_ip    \nWhere idp_ip is the ip address of your IDP"
-#python setupk2k_sp.py $IDP_IP
+echo "run python script to register entities, make mapping and protocols and a bunch of other stuff"
+python setupk2k_sp.py idp_ip 

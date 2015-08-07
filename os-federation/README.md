@@ -1,19 +1,76 @@
 ## Overview
 This set up follows [rodrigods' tutorial](http://blog.rodrigods.com/it-is-time-to-play-with-keystone-to-keystone-federation-in-kilo/) of how to set up K2K for kilo. This is for Devstack environment in Kilo with Keystone v3
 
-Things to do:
-* solve the domain requirement in policy.json
-* openrc file doesn't contain domain id by default 
-
 This is document is a side note of radrigod's tutorial. It is **not** a thorough explaination of everything. 
 
 `keystone.sp` = IP address of sp + `:5000`
 
 `keystone.idp` = IP address of idp + `:5000`
 
+## **Automation** 
+
+This is a kind of ugly way of automating but I guess it's better than nothing.
+
+There are some very bad practices in here...remember [**Never use regex to to phars XML/HTML**](http://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags)
+
+**1.download this folder**
+
+Make sure you have `auto-IdP`, `auto-SP` and `devstack-k2k`, in the same place. 
+
+**2. vagrant up** 
+
+```
+cd devstack-k2k
+vagrant up --no-provision
+vagrant provision
+```
+
+Here I do `vagrant up` and `vagrant provision` seperately because I want two ip addresses that are right next to each other..If you don't care about that you can just run `vagrant up` which will bring up two vms sequentially.
+
+If you are curious, the Vagrantfile is the recipe of automatically bring up two vms `k2k-idp` and `k2k-sp` note that the **name here does matter** so don't change it unless you know what you are doing. 
+
+**3. ssh into the vms set up the environment**
+
+First copy the openrc file for **both** idp and sp
+
+```
+cp ~/devstack/accrc/admin/admin ~
+```
+
+**IMPORTANT** you have to modify the accrc file to export OS_PROJECT_ID, OS_USER_ID and OS_AUTH_URL
+
+* `OS_PROJECT_ID` and `OS_USER_ID` are commented out in the admin rc file, you just need to export it
+* `OS_AUTH_URL` is set to /v2.0 right now, we want it to be /v3
+
+Second set up k2k-sp
+
+```
+cd ~/SP
+source ~/admin
+./env.sh
+```
+
+Third set up k2k-idp
+
+```
+cd ~/IdP
+./env.sh
+```
+
+**4. ssh into back IdP and register the enpoints**
+
+ssh back into k2k-idp and run 
+
+```
+./k2k.sh
+```
+
+And this will give you the scoped token
+If you want more explainaion read through the rest of the README 
+
 ### Set up environment
 
-`devstack-os` folder contains vagrant recipe to spin up 3 devstack kilo openstack environment on csail environment 
+`devstack-k2k` folder contains vagrant recipe to spin up 2 devstack kilo openstack environment on csail environment 
 
 This in progress of automating the deployment of a pair of openstack with k2k setup
 
