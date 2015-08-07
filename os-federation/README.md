@@ -57,15 +57,8 @@ cd ~/IdP
 ./env.sh
 ```
 
-**4. ssh into back IdP and register the enpoints**
-
-ssh back into k2k-idp and run 
-
-```
-./k2k.sh
-```
-
 And this will give you the scoped token
+
 If you want more explainaion read through the rest of the README 
 
 ### Set up environment
