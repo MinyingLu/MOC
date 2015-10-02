@@ -1,4 +1,4 @@
-IDP_IP=$(/bin/cat /etc/hosts | grep k2k-idp | awk '{print $1}')
+IDP_IP=$(/bin/cat /etc/hosts | grep idp | awk '{print $1}')
 
 echo "IDP ip address is ${IDP_IP}"
 echo "install shibboleth"
