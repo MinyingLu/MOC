@@ -1,4 +1,4 @@
-## Overview
+# Overview
 This set up follows [rodrigods' tutorial](http://blog.rodrigods.com/it-is-time-to-play-with-keystone-to-keystone-federation-in-kilo/) of how to set up K2K for kilo. This is for Devstack environment in Kilo with Keystone v3
 
 This is document is a side note of radrigod's tutorial. It is **not** a thorough explaination of everything. 
@@ -13,11 +13,11 @@ This is a kind of ugly way of automating but I guess it's better than nothing.
 
 There are some very bad practices in here...remember [**Never use regex to to phars XML/HTML**](http://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags)
 
-**1. download this folder**
+####1. download this folder
 
 Make sure you have `auto-IdP`, `auto-SP` and `devstack-k2k`, in the same place. 
 
-**2. vagrant up** 
+####2. vagrant up
 
 ```
 cd devstack-k2k
@@ -29,9 +29,9 @@ Here I do `vagrant up` and `vagrant provision` seperately because I want two ip 
 
 If you are curious, the Vagrantfile is the recipe of automatically bring up two vms `k2k-idp` and `k2k-sp` note that the **name here does matter** so don't change it unless you know what you are doing. 
 
-**3. ssh into the vms set up the environment**
+####3. ssh into the vms set up the environment
 
-- 1st copy the openrc file for **both** idp and sp
+**1st copy the openrc file for **both** idp and sp**
 
 ```
 cp ~/devstack/accrc/admin/admin ~
@@ -42,7 +42,7 @@ cp ~/devstack/accrc/admin/admin ~
 * `OS_PROJECT_ID` and `OS_USER_ID` are commented out in the admin rc file, you just need to export it
 * `OS_AUTH_URL` is set to /v2.0 right now, we want it to be /v3
 
-- 2nd set up environment in Service Provider
+**2nd set up environment in Service Provider**
 
 ```
 cd ~/SP
@@ -50,21 +50,21 @@ source ~/admin
 ./env.sh
 ```
 
-- 3rd set up environment in Identity Provider
+3rd set up environment in Identity Provider**
 
 ```
 cd ~/IdP
 ./env.sh
 ```
 
-- 4th finish setup of shibboleth in Service Provider
+**4th finish setup of shibboleth in Service Provider**
 
 ```
 cd ~/SP
 ./k2k.sh
 ```
 
-- 5th execute k2k fedration in Identity Provider and get a scoped token from SP 
+**5th execute k2k fedration in Identity Provider and get a scoped token from SP** 
 
 ```
 cd ~/IdP
@@ -77,7 +77,7 @@ If you want more explainaion read through the rest of the README
 
 ** This is base on the assumtion that you have already set up one direction k2k ** 
 
-- 1st set up environment as SP in the previous IdP
+**1st set up environment as SP in the previous IdP**
 
 ```
 cd ~/SP
@@ -85,21 +85,21 @@ source ~/admin
 ./env_2way.sh
 ```
 
-- 2nd set up environment as IdP at the previous SP 
+**2nd set up environment as IdP at the previous SP**
 
 ```
 cd ~/IdP
 ./env_2way.sh
 ```
 
-- 3rd finish setup of shibboleth in the new SP (previously IdP)
+**3rd finish setup of shibboleth in the new SP (previously IdP)**
 
 ```
 cd ~/SP
 ./k2k_2way.sh
 ```
 
-- 4th execute k2k fedration in IdP (previously SP) and get a scoped token from SP 
+**4th execute k2k fedration in IdP (previously SP) and get a scoped token from SP**
 
 ```
 cd ~/IdP
