@@ -13,7 +13,7 @@ This is a kind of ugly way of automating but I guess it's better than nothing.
 
 There are some very bad practices in here...remember [**Never use regex to to phars XML/HTML**](http://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags)
 
-**1.download this folder**
+**1. download this folder**
 
 Make sure you have `auto-IdP`, `auto-SP` and `devstack-k2k`, in the same place. 
 
@@ -31,7 +31,7 @@ If you are curious, the Vagrantfile is the recipe of automatically bring up two 
 
 **3. ssh into the vms set up the environment**
 
-First copy the openrc file for **both** idp and sp
+1. copy the openrc file for **both** idp and sp
 
 ```
 cp ~/devstack/accrc/admin/admin ~
@@ -42,7 +42,7 @@ cp ~/devstack/accrc/admin/admin ~
 * `OS_PROJECT_ID` and `OS_USER_ID` are commented out in the admin rc file, you just need to export it
 * `OS_AUTH_URL` is set to /v2.0 right now, we want it to be /v3
 
-Second set up k2k-sp
+2. set up environment in Service Provider
 
 ```
 cd ~/SP
@@ -50,16 +50,64 @@ source ~/admin
 ./env.sh
 ```
 
-Third set up k2k-idp
+3. set up environment in Identity Provider
 
 ```
 cd ~/IdP
 ./env.sh
 ```
 
-And this will give you the scoped token
+4. finish setup of shibboleth in Service Provider
+
+```
+cd ~/SP
+./k2k.sh
+```
+
+5. execute k2k fedration in Identity Provider and get a scoped token from SP 
+
+```
+cd ~/IdP
+./k2k.sh
+```
 
 If you want more explainaion read through the rest of the README 
+
+### 2-way automation
+
+** This is base on the assumtion that you have already set up one direction k2k ** 
+
+2. set up environment as SP in the previous IdP
+
+```
+cd ~/SP
+source ~/admin
+./env_2way.sh
+```
+
+3. set up environment as IdP at the previous SP 
+
+```
+cd ~/IdP
+./env_2way.sh
+```
+
+4. finish setup of shibboleth in the new SP (previously IdP)
+
+```
+cd ~/SP
+./k2k_2way.sh
+```
+
+5. execute k2k fedration in IdP (previously SP) and get a scoped token from SP 
+
+```
+cd ~/IdP
+./k2k_2way.sh
+```
+
+
+
 
 ### Set up environment
 
