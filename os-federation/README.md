@@ -31,7 +31,7 @@ If you are curious, the Vagrantfile is the recipe of automatically bring up two 
 
 **3. ssh into the vms set up the environment**
 
-1. copy the openrc file for **both** idp and sp
+- 1st copy the openrc file for **both** idp and sp
 
 ```
 cp ~/devstack/accrc/admin/admin ~
@@ -42,7 +42,7 @@ cp ~/devstack/accrc/admin/admin ~
 * `OS_PROJECT_ID` and `OS_USER_ID` are commented out in the admin rc file, you just need to export it
 * `OS_AUTH_URL` is set to /v2.0 right now, we want it to be /v3
 
-2. set up environment in Service Provider
+- 2nd set up environment in Service Provider
 
 ```
 cd ~/SP
@@ -50,21 +50,21 @@ source ~/admin
 ./env.sh
 ```
 
-3. set up environment in Identity Provider
+- 3rd set up environment in Identity Provider
 
 ```
 cd ~/IdP
 ./env.sh
 ```
 
-4. finish setup of shibboleth in Service Provider
+- 4th finish setup of shibboleth in Service Provider
 
 ```
 cd ~/SP
 ./k2k.sh
 ```
 
-5. execute k2k fedration in Identity Provider and get a scoped token from SP 
+- 5th execute k2k fedration in Identity Provider and get a scoped token from SP 
 
 ```
 cd ~/IdP
@@ -77,7 +77,7 @@ If you want more explainaion read through the rest of the README
 
 ** This is base on the assumtion that you have already set up one direction k2k ** 
 
-2. set up environment as SP in the previous IdP
+- 1st set up environment as SP in the previous IdP
 
 ```
 cd ~/SP
@@ -85,29 +85,26 @@ source ~/admin
 ./env_2way.sh
 ```
 
-3. set up environment as IdP at the previous SP 
+- 2nd set up environment as IdP at the previous SP 
 
 ```
 cd ~/IdP
 ./env_2way.sh
 ```
 
-4. finish setup of shibboleth in the new SP (previously IdP)
+- 3rd finish setup of shibboleth in the new SP (previously IdP)
 
 ```
 cd ~/SP
 ./k2k_2way.sh
 ```
 
-5. execute k2k fedration in IdP (previously SP) and get a scoped token from SP 
+- 4th execute k2k fedration in IdP (previously SP) and get a scoped token from SP 
 
 ```
 cd ~/IdP
 ./k2k_2way.sh
 ```
-
-
-
 
 ### Set up environment
 
