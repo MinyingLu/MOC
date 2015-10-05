@@ -11,6 +11,7 @@ try:
     OS_AUTH_URL = os.environ['OS_AUTH_URL']
     OS_PROJECT_ID = os.environ['OS_PROJECT_ID']
     OS_USER_ID = os.environ['OS_USER_ID']
+    OS_PASSWORD = os.environ['OS_PASSWORD']
 except KeyError as e:
     raise SystemExit('%s environment variable not set.' % e)
 
@@ -23,7 +24,7 @@ class K2KClient(object):
         self.auth_url = OS_AUTH_URL
         self.project_id = OS_PROJECT_ID
         self.user_id = OS_USER_ID
-        self.password = "nomoresecrete"
+        self.password = OS_PASSWORD
 
     def v3_authenticate(self):
         auth = v3.Password(auth_url=self.auth_url,
