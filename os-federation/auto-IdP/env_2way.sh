@@ -13,4 +13,3 @@ keystone-manage saml_idp_metadata > /etc/keystone/keystone_idp_metadata.xml
 sudo service apache2 restart 
 
 python setupk2k_idp.py $SP_IP
-python k2kclient.py $SP_IP
