@@ -135,28 +135,6 @@ class K2KClient(object):
         self.scoped_token_id = r.headers['X-Subject-Token']
         self.scoped_token_ref = str(r.text)
 
-client = K2KClient()
-client.v3_authenticate()
-client.get_saml2_ecp_assertion()
-print('ECP wrapped SAML assertion: %s' % client.assertion)
-client.exchange_assertion()
-print('Unscoped token id: %s' % client.fed_token_id)
-print "==================SCOPE TOKEN================="
-project_list = client.list_federated_projects()
-project_id = str(project_list[u'projects'][1][u'id'])
-print('scope to project [%s]' % project_list[u'projects'][1]['name'])
-print ('project id: %s' % project_id)
-client.scope_token(project_id=project_id)
-print('Scoped token id: %s' % client.scoped_token_id)
-#client.scoped_auth_ref = client.r.json()
-#client.scoped_auth = v3.Token(auth_url="http://128.52.183.216:5000/v3", 
-#                              token=client.scoped_token_id)
-#client.scoped_auth.auth_ref = client.scoped_auth_ref
-#client.scoped_session = ksc_session.Session(auth=client.scoped_auth, verify=False)
-#client.unscoped_auth = v3.Token(auth_url="http://128.52.183.216:5000/v3", 
-#                                token=client.fed_token_id)
-#client.unscoped_session = ksc_session.Session(auth=client.unscoped_auth, verify=False)
-
 def main():  
     client = K2KClient()
     client.v3_authenticate()
