@@ -42,31 +42,26 @@ cp ~/devstack/accrc/admin/admin ~
 * `OS_PROJECT_ID` and `OS_USER_ID` are commented out in the admin rc file, you just need to export it
 * `OS_AUTH_URL` is set to /v2.0 right now, we want it to be /v3
 
-**2nd set up environment in Service Provider**
+**2nd set up environment in Identity Provider**
 
 ```
-cd ~/SP
+cd ~/IdP
 source ~/admin
 ./env.sh
 ```
 
-3rd set up environment in Identity Provider**
+3rd set up environment in Service Provider**
 
 ```
-cd ~/IdP
+source ~/admin
+cd ~/SP
 ./env.sh
 ```
 
-**4th finish setup of shibboleth in Service Provider**
+**4th execute k2k fedration in Identity Provider and get a scoped token from SP** 
 
 ```
-cd ~/SP
-./k2k.sh
-```
-
-**5th execute k2k fedration in Identity Provider and get a scoped token from SP** 
-
-```
+source ~/admin
 cd ~/IdP
 ./k2k.sh
 ```
@@ -77,31 +72,27 @@ If you want more explainaion read through the rest of the README
 
 ** This is base on the assumtion that you have already set up one direction k2k ** 
 
-**1st set up environment as SP in the previous IdP**
+**1st set up environment as IdP in the previous SP**
 
 ```
-cd ~/SP
+cd ~/IdP
 source ~/admin
 ./env_2way.sh
 ```
 
-**2nd set up environment as IdP at the previous SP**
+**2nd set up environment as SP at the previous IdP**
 
 ```
-cd ~/IdP
+source ~/admin
+cd ~/SP
 ./env_2way.sh
 ```
 
-**3rd finish setup of shibboleth in the new SP (previously IdP)**
+
+**3th execute k2k fedration in IdP (previously SP) and get a scoped token from SP**
 
 ```
-cd ~/SP
-./k2k_2way.sh
-```
-
-**4th execute k2k fedration in IdP (previously SP) and get a scoped token from SP**
-
-```
+source ~/admin
 cd ~/IdP
 ./k2k_2way.sh
 ```
