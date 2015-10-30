@@ -4,6 +4,7 @@ This repository contains part of the works I've been doing with Massachusetts Op
 
 The main projects that I'm working on are:
 * Openstack Mix&Match Federation
+  * the folder `os-federation` under this repository is deprecated, please checkout [k2k-fed](https://github.com/minggLu/k2k-fed) for automated Keystone to Keystone federation set up **from scratch** with vagrant and devstack
   * see our [public wiki](https://github.com/CCI-MOC/moc-public/wiki/Mix-and-Match-Federation) page for more detail
   * Keystone to Keystone federation
   * Using K2K federation to do application between 2 openstacks, such as using attach volume from remote cinder (in Service Provider) to a local instance (in Identity Provider)
@@ -13,5 +14,6 @@ The main projects that I'm working on are:
 * BigData As A Service (BDAAS)
   * This project started on July 2015. It is more of a research project on eximinating the difference in performance of a **virtual** hadoop cluster in terms of power consumtion, cpu usage, running time, etc with different hadoop components.
   * MOC provides administrative privilege to support a throughout and detailed data collection
-  * This research requires a fast and easy deployment of hadoop clusters with many machines (tens? hundreds?) on openstack. I created a 1-click hadoop cluster deployment, that deploys multiple hadoop clusters in parallel. This effort in in the progress of upstreaming to [apache/bigtop](https://github.com/apache/bigtop)see [BIGTOP-1911](https://issues.apache.org/jira/browse/BIGTOP-1911) for detail  
+  * This research requires a fast and easy deployment of hadoop clusters with many machines (tens? hundreds?) on openstack. I created a 1-click hadoop cluster deployment, that deploys multiple hadoop clusters in parallel. 
+  * This effort is upstreamed to [apache/bigtop](https://github.com/apache/bigtop)see [BIGTOP-1911](https://issues.apache.org/jira/browse/BIGTOP-1911) for detail  
 ##
